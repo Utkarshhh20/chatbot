@@ -10,7 +10,7 @@ def get_models():
     # seems pytorch keeps an internal state of the conversation
     model_name = "facebook/blenderbot-400M-distill"
     tokenizer = BlenderbotTokenizer.from_pretrained(model_name)
-    model = BlenderbotForConditionalGeneration.from_pretrained(model_name, return_dict = True)
+    model = BlenderbotForConditionalGeneration.from_pretrained(model_name)
     return tokenizer, model
 
 
