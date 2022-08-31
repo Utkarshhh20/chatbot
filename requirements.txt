@@ -1,5 +1,5 @@
-ChatterBot
-chatterbot-corpus
+ChatterBot==1.0.4
+chatterbot-corpus==1.2.0
 jsonlines
 SQLAlchemy==1.2
 sqlparse
