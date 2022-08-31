@@ -9,7 +9,7 @@ def get_text():
     return input_text 
 
 data = json.loads(open(r'https://raw.githubusercontent.com/Utkarshhh20/chatbot/main/data_tolokers.json','r').read())#change path accordingly
-data2 = json.loads(open(r'sw.json','r').read())#change path accordingly
+data2 = json.loads(open(r'https://raw.githubusercontent.com/Utkarshhh20/chatbot/main/sw.json','r').read())#change path accordingly
 
 tra = []
 for k, row in enumerate(data):
