@@ -1,3 +1,6 @@
+ChatterBot
+chatterbot-corpus
+jsonlines
+SQLAlchemy==1.2
+sqlparse
 streamlit
-transformers
-streamlit-chat
