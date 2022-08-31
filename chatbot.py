@@ -1,39 +1,54 @@
 import streamlit as st
-from streamlit_chat import message as st_message
-from transformers import BlenderbotTokenizer
-from transformers import BlenderbotForConditionalGeneration
+from chatterbot import ChatBot
+from chatterbot.trainers import ListTrainer
+from chatterbot.trainers import ChatterBotCorpusTrainer 
+import json
+
+def get_text():
+    input_text = st.text_input("You: ","So, what's in your mind")
+    return input_text 
+
+data = json.loads(open(r'data_tolokers.json','r').read())#change path accordingly
+data2 = json.loads(open(r'sw.json','r').read())#change path accordingly
+
+tra = []
+for k, row in enumerate(data):
+    #print(k)
+    tra.append(row['dialog'][0]['text'])
+for k, row in enumerate(data2):
+    #print(k)
+    tra.append(row['dialog'][0]['text'])
+    
+    
+
+st.sidebar.title("NLP Bot")
+st.title("""
+NLP Bot  
+NLP Bot is an NLP conversational chatterbot. Initialize the bot by clicking the "Initialize bot" button. 
+""")
 
 
-@st.experimental_singleton(suppress_st_warning=True)
-def get_models():
-    # it may be necessary for other frameworks to cache the model
-    # seems pytorch keeps an internal state of the conversation
-    model_name = "facebook/blenderbot-400M-distill"
-    tokenizer = BlenderbotTokenizer.from_pretrained(model_name)
-    model = BlenderbotForConditionalGeneration.from_pretrained(model_name)
-    return tokenizer, model
+bot = ChatBot(name = 'PyBot', read_only = False,preprocessors=['chatterbot.preprocessors.clean_whitespace','chatterbot.preprocessors.convert_to_ascii','chatterbot.preprocessors.unescape_html'], logic_adapters = ['chatterbot.logic.MathematicalEvaluation','chatterbot.logic.BestMatch'])
+#corpus_trainer = ChatterBotCorpusTrainer(bot) 
+#corpus_trainer.train('chatterbot.corpus.english') 
+#return bot
 
 
-if "history" not in st.session_state:
-    st.session_state.history = []
-
-st.title("Hello Chatbot")
-
-
-def generate_answer():
-    tokenizer, model = get_models()
-    user_message = st.session_state.input_text
-    inputs = tokenizer(st.session_state.input_text, return_tensors="pt")
-    result = model.generate(**inputs)
-    message_bot = tokenizer.decode(
-        result[0], skip_special_tokens=True
-    )  # .replace("<s>", "").replace("</s>", "")
-
-    st.session_state.history.append({"message": user_message, "is_user": True})
-    st.session_state.history.append({"message": message_bot, "is_user": False})
+ind = 1
+if st.sidebar.button('Initialize bot'):
+    #do something
+    #bot = ChatBot(name = 'PyBot', read_only = False,preprocessors=['chatterbot.preprocessors.clean_whitespace','chatterbot.preprocessors.convert_to_ascii','chatterbot.preprocessors.unescape_html'], logic_adapters = ['chatterbot.logic.MathematicalEvaluation','chatterbot.logic.BestMatch'])
+    corpus_trainer = ChatterBotCorpusTrainer(bot) 
+    corpus_trainer.train('chatterbot.corpos.english') 
+    trainer2 = ListTrainer(bot) 
+    trainer2.train(tra)
+    st.title("Your bot is ready to talk to you")
+    ind = ind +1
+        
+user_input = get_text()
 
 
-st.text_input("Talk to the bot", key="input_text", on_change=generate_answer)
-
-for chat in st.session_state.history:
-    st_message(**chat)  # unpacking
+if True:
+    st.text_area("Bot:", value=bot.get_response(user_input), height=200, max_chars=None, key=None)
+else:
+    st.text_area("Bot:", value="Please start the bot by clicking sidebar button", height=200, max_chars=None, key=None)
